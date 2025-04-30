@@ -1,0 +1,276 @@
+body {
+  background: #121212;
+  color: #eee;
+  font-family: sans-serif;
+  padding: 2em;
+}
+
+a {
+  color: #00aaff;
+  text-decoration: none;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 0.5em;
+  text-align: left;
+  border-bottom: 1px solid #444;
+}
+
+.header-buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 1em;
+  margin-bottom: 1em;
+}
+
+/* Кнопки общего назначения */
+button,
+.admin-panel-button,
+.settings-btn,
+.logout-btn,
+.upload-btn,
+.delete-btn,
+.change-pass-btn,
+.delete-account-btn,
+.close-btn,
+.add-user-btn,
+.register-btn {
+  background-color: #333;
+  border: none;
+  color: white;
+  font-size: 1em;
+  padding: 0.6em 1em;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+  margin-bottom: 1em;
+}
+
+button:hover,
+.admin-panel-button:hover,
+.settings-btn:hover,
+.logout-btn:hover,
+.upload-btn:hover {
+  opacity: 1;
+  background-color: #666;
+}
+
+/* Специальные кнопки */
+.logout-btn {
+  background-color: #777;
+  opacity: 0.7;
+}
+
+.upload-btn {
+  background-color: #424242;
+  padding: 10px 20px;
+  margin-top: 10px;
+}
+
+.upload-btn:hover {
+  background-color: #616161;
+}
+
+.delete-account-btn {
+  background-color: red;
+}
+
+.inline-form {
+  display: inline;
+}
+
+.del-admin-form {
+  margin-top: 10px;
+}
+
+/* Модальное окно */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  padding-top: 10%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #1e1e1e;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #444;
+  max-height: 50em;
+  overflow-y: auto;
+  width: 400px;
+  border-radius: 10px;
+  color: #eee;
+  animation: slideIn 0.5s forwards;
+}
+
+.modal-content form input {
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: white;
+  font-size: 1em;
+}
+
+.modal .modal-content form .close-btn,
+.modal-content .close-btn,
+.modal-content .delete-account-btn {
+  margin-top: 10px;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 0.5; }
+  to   { opacity: 0; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-50px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(-50px); opacity: 0; }
+}
+
+/* Список пользователей */
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5em 0;
+  border-bottom: 1px solid #444;
+}
+
+.user-actions {
+  display: flex;
+  gap: 0.5em;
+  flex-wrap: wrap;
+}
+
+.delete-btn, .role-btn {
+  background-color: #555;
+  border: none;
+  color: white;
+  font-size: 0.8em;
+  padding: 0.3em 0.6em;
+  margin-left: 0.5em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-btn:hover, .role-btn:hover {
+  background-color: #777;
+  transform: scale(1.05);
+}
+
+.delete-btn {
+  background-color: red;
+}
+
+.download-btn, .delete-file-btn {
+  display: inline-block;
+  background-color: #4caf50;
+  color: white;
+  padding: 0.4em 0.9em;
+  font-size: 0.9em;
+  text-decoration: none;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.delete-file-btn {
+  background-color: #e53935;
+  border: none;
+  color: white;
+  font-size: 0.9em;
+  padding: 0.4em 0.9em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete-file-btn:hover {
+  background-color: #ef5350;
+}
+
+.download-btn:hover {
+  background-color: #66bb6a;
+}
+
+/* Drag and drop */
+.drop-zone {
+  border: 2px dashed #555;
+  border-radius: 8px;
+  padding: 40px 20px;
+  background: #2a2a2a;
+  color: #ccc;
+  cursor: pointer;
+  transition: border-color 0.3s, background-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.drop-zone.dragover {
+  border-color: #4fc3f7;
+  background-color: #333;
+}
+
+.uploaded-files {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.uploaded-files li {
+  background-color: #2b2b2b;
+  color: #fff;
+  margin: 4px 0;
+  padding: 6px 10px;
+  border-left: 4px solid #4fc3f7;
+  border-radius: 6px;
+  font-size: 1.1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.remove-file-btn {
+  background: transparent;
+  border: none;
+  color: #ff6b6b;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  cursor: pointer;
+  margin-left: 10px;
+}
+
+.remove-file-btn:hover {
+  color: #ff3b3b;
+}
+
