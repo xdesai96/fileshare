@@ -47,3 +47,33 @@ SHARE_DIR=./uploads
 ```bash
 python server.py
 ```
+### 🛠️ Project Structure
+
+```bash
+fileshare/
+├── static/           # CSS, JavaScript, assets
+├── templates/        # Jinja2 HTML templates
+├── models.py         # SQLAlchemy models
+├── server.py         # Flask application
+├── utils.py          # Utility functions (e.g. hashing)
+├── .env              # Environment variables
+└── requirements.txt  # Python dependencies
+```
+### 👮 User Roles
+
+- Owner: Full access to all features, including user management
+- Admin: Can upload files, delete their own files
+- User: Can download files
+
+### 🧩 Roadmap / Ideas
+- Upload progress bar
+- Ability to cancel ongoing uploads
+- File search feature
+- Cloud storage support (e.g. S3, Dropbox)
+
+### 📄 License
+MIT License — free to use with credit.
+
+### 🤝 Contact
+Telegram: [@xdesai](https://t.me/xdesai)
+Web-bio: https://xdesai.org
