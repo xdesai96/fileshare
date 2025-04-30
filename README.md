@@ -75,5 +75,5 @@ fileshare/
 MIT License — free to use with credit.
 
 ### 🤝 Contact
-Telegram: [@xdesai](https://t.me/xdesai)
-Web-bio: https://xdesai.org
+- Telegram: [@xdesai](https://t.me/xdesai)
+- Web-bio: https://xdesai.org
