@@ -3,7 +3,7 @@ import time
 import logging
 from dotenv import load_dotenv
 
-from flask import Flask, request, render_template, redirect, url_for, session, send_from_directory, flash
+from flask import Flask, request, render_template, redirect, url_for, session, send_from_directory, flash, abort, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -36,8 +36,8 @@ owner_password = os.getenv('owner_password')
 db.init_app(app)
 with app.app_context():
     db.create_all()
-    desai_user = db.session.query(User).filter_by(username=owner_username).first()
-    if not owner_username:
+    init_owner = db.session.query(User).filter_by(username=owner_username).first()
+    if not init_owner:
         add_owner(owner_username, owner_password)
 
 
@@ -262,5 +262,5 @@ def download_folder(path):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080, debug=False)
+    app.run(host='127.0.0.1', port=5555, debug=False)
 
