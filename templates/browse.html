@@ -15,8 +15,10 @@
         <button type="submit" class="logout-btn">🚪 Logout</button>
       </form>
 
-      <!-- Settings for everyone -->
+      <!-- Settings for admins and owner -->
+      {% if role != %}
       <button id="settingsBtn" class="settings-btn">⚙️ Settings</button>
+      {% endif %}
 
       {% if role == 'owner' %}
         <!-- Admin Panel Button -->
@@ -31,6 +33,7 @@
   </div>
 
   <!-- Settings Modal -->
+  {% if role != 'user' %}
   <div id="settingsModal" class="modal">
     <div class="modal-content">
       <h2>⚙️ Account Settings</h2>
@@ -41,6 +44,7 @@
       <button onclick="closeModal('settingsModal')" class="close-btn">✖ Close</button>
     </div>
   </div>
+  {% endif %}
 
   <!-- Admin Panel Modal (for Owner only) -->
   {% if role == 'owner' %}
