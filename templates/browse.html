@@ -38,10 +38,6 @@
         <input type="password" name="new_password" placeholder="New Password" required>
         <button type="submit" class="change-pass-btn">Change Password</button>
       </form>
-      <form method="post" action="{{ url_for('delete_user_req') }}" onsubmit="return confirm('Are you sure?');">
-        <input type="hidden" name="username" value="{{ me.username }}">
-        <button type="submit" class="delete-account-btn">Delete My Account</button>
-      </form>
       <button onclick="closeModal('settingsModal')" class="close-btn">✖ Close</button>
     </div>
   </div>
