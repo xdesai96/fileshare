@@ -3,7 +3,7 @@ import time
 import logging
 from dotenv import load_dotenv
 
-from flask import Flask, request, render_template, redirect, url_for, session, send_from_directory, flash, abort, send_file, flash
+from flask import Flask, jsonify, request, render_template, redirect, url_for, session, send_from_directory, flash, abort, send_file, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -94,7 +94,7 @@ def login():
 @app.route('/register_user', methods=['POST'])
 def register_user():
     if 'user_id' not in session or session['role'] != 'owner':
-        return redirect(url_for('browse'))
+        return redirect(request.referrer)
 
     username = request.form['username']
     password = request.form['password']
@@ -106,12 +106,12 @@ def register_user():
 @app.route('/delete_user', methods=['POST'])
 def delete_user_req():
     if 'user_id' not in session or session['role'] != 'owner':
-        return redirect(url_for('browse'))
+        return redirect(request.referrer)
 
     username = request.form['username']
 
     if username not in get_users().keys():
-        return redirect(url_for('browse'))
+        return redirect(request.referrer)
 
     delete_user(username)
     return redirect(request.referrer)
@@ -144,8 +144,7 @@ def change_role(username, role):
             db.session.delete(user.owner)
 
     db.session.commit()
-    return redirect(request.referrer)
-
+    return jsonify({'success': True})
 
 @app.route('/change_password', methods=['POST'])
 def change_password():

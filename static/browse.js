@@ -5,7 +5,7 @@ function openModal(modalId) {
   if (!modal) return console.warn(`Modal "${modalId}" not found`);
   const content = modal.querySelector('.modal-content');
 
-  modal.style.display = "block";
+  modal.style.display = 'flex';
   modal.style.animation = "fadeIn 0.3s ease-out forwards";
   if (content) content.style.animation = "slideIn 0.3s ease-out forwards";
 }
@@ -111,23 +111,21 @@ function setupDropZone(dropZoneId, fileInputId, previewListId) {
 
 function changeRole(username, newRole) {
   fetch(`/change_role/${username}/${newRole}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, role: newRole })
+    method: 'POST'
   })
     .then(response => response.json())
     .then(data => {
       if (data.success) {
-        const roleElement = document.getElementById(`role-${username}`);
-        if (roleElement) roleElement.textContent = newRole;
+        location.reload();
       } else {
-        alert('Failed to update role');
+        alert(data.message || 'Failed to update role');
       }
     })
     .catch(error => {
       console.error('Error changing role:', error);
     });
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   bindModalButton("adminPanelBtn", "adminModal");

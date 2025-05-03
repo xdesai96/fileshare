@@ -3,7 +3,7 @@ body {
   color: #eee;
   font-family: sans-serif;
   padding: 2em;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 a {
@@ -91,28 +91,30 @@ button:hover,
 
 /* Модальное окно */
 .modal {
-  display: none;
   position: absolute;
-  z-index: 1000;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
-  padding-top: 10%;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.5);
+  overflow-y: auto;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
   background-color: #1e1e1e;
-  margin: auto;
   padding: 20px;
   border: 1px solid #444;
-  max-height: 50em;
-  overflow-y: auto;
-  width: 400px;
   border-radius: 10px;
+  max-width: 400px;
+  max-height: 80vh;
+  justify-content: center;
+  align-items: center;
+  overflow-y: auto;
   color: #eee;
-  animation: slideIn 0.5s forwards;
 }
 
 .modal-content form input {
