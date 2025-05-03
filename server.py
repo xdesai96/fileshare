@@ -235,9 +235,9 @@ def admin_upload():
 
             base, ext = os.path.splitext(filename)
             i = 1
-            final_name = f"{base}_{username}{ext}" if username != owner_username else f"{base}{ext}"
+            final_name = f"{username}_{base}{ext}" if username != owner_username else f"{base}{ext}"
             while os.path.exists(os.path.join(SHARE_DIR, final_name)):
-                final_name = f"{base}_{username}_{i}{ext}" if username != owner_username else f"{base}_{i}{ext}"
+                final_name = f"{i}_{username}_{base}{ext}" if username != owner_username else f"{i}_{base}{ext}"
                 i += 1
             file.save(os.path.join(SHARE_DIR, final_name))
 
