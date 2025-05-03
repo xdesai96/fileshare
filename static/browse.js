@@ -126,6 +126,26 @@ function changeRole(username, newRole) {
     });
 }
 
+document.getElementById('updateFileShareBtn').addEventListener('click', function () {
+    fetch('/update_fileshare', {
+        method: 'POST',
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('FileShare updated successfully!');
+            console.log(data.output); // Можно логировать вывод команды
+        } else {
+            alert('Failed to update FileShare: ' + data.error);
+            console.error(data.error); // Логируем ошибку
+        }
+    })
+    .catch(error => {
+        alert('Error occurred while updating FileShare!');
+        console.error(error);
+    });
+});
+
 
 document.addEventListener("DOMContentLoaded", () => {
   bindModalButton("adminPanelBtn", "adminModal");

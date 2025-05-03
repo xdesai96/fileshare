@@ -1,6 +1,7 @@
 import os
 import time
 import logging
+import subprocess
 from dotenv import load_dotenv
 
 from flask import Flask, jsonify, request, render_template, redirect, url_for, session, send_from_directory, flash, abort, send_file, flash
@@ -241,6 +242,15 @@ def admin_upload():
             file.save(os.path.join(SHARE_DIR, final_name))
 
     return redirect(request.referrer)
+
+
+@app.route('/update_fileshare', methods=['POST'])
+def update_fileshare():
+    try:
+        result = subprocess.run(['git', 'pull'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return jsonify({'success': True, 'output': result.stdout.decode('utf-8')}), 200
+    except subprocess.CalledProcessError as e:
+        return jsonify({'success': False, 'error': e.stderr.decode('utf-8')}), 500
 
 
 @app.route('/download_folder/<path:path>')
