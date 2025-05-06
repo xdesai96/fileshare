@@ -71,6 +71,7 @@ def get_file_icon(file_name):
         "pptx": "ppt.png",
         "mp4": "video.png",
         "avi": "video.png",
+        "sh": "bash.png",
         "mp3": "audio.png",
         "xlsx": "excel.png",
         "txt": "txt.png",
