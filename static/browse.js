@@ -58,6 +58,10 @@ function setupDropZone(dropZoneId, fileInputId, previewListId) {
 
   let selectedFiles = [];
 
+  function truncateName(name, maxLength = 24) {
+    return name.length > maxLength ? name.slice(0, maxLength - 1) + "…" : name;
+  }
+
   function updateFileInput() {
     const dataTransfer = new DataTransfer();
     selectedFiles.forEach((file) => dataTransfer.items.add(file));
@@ -66,30 +70,33 @@ function setupDropZone(dropZoneId, fileInputId, previewListId) {
 
   function renderPreview() {
     previewList.innerHTML = "";
-
     const addedFolders = new Set();
 
     selectedFiles.forEach((file, index) => {
       const li = document.createElement("li");
+      const span = document.createElement("span");
       let label = "";
+      let fullLabel = "";
 
-      if (file.webkitRelativePath) {
+      if (file.webkitRelativePath && file.webkitRelativePath.includes("/")) {
         const folderName = file.webkitRelativePath.split("/")[0];
         if (addedFolders.has(folderName)) return;
         addedFolders.add(folderName);
-        label = `📁 ${folderName}`;
+        fullLabel = `📁 ${folderName}`;
+        label = truncateName(fullLabel);
       } else {
-        label = file.name;
+        fullLabel = file.name;
+        label = truncateName(file.name);
       }
 
-      li.textContent = label;
+      span.textContent = label;
+      span.title = fullLabel;
 
       const removeBtn = document.createElement("button");
       removeBtn.textContent = "✕";
       removeBtn.className = "remove-file-btn";
       removeBtn.addEventListener("click", () => {
-        if (file.webkitRelativePath) {
-          // Удаляем ВСЕ файлы из этой папки
+        if (file.webkitRelativePath && file.webkitRelativePath.includes("/")) {
           const folderPrefix = file.webkitRelativePath.split("/")[0] + "/";
           selectedFiles = selectedFiles.filter(
             (f) =>
@@ -105,6 +112,7 @@ function setupDropZone(dropZoneId, fileInputId, previewListId) {
         updateFileInput();
       });
 
+      li.appendChild(span);
       li.appendChild(removeBtn);
       previewList.appendChild(li);
     });
@@ -211,10 +219,10 @@ document
       .then((data) => {
         if (data.success) {
           alert("FileShare updated successfully!");
-          console.log(data.output); // Можно логировать вывод команды
+          console.log(data.output);
         } else {
           alert("Failed to update FileShare: " + data.error);
-          console.error(data.error); // Логируем ошибку
+          console.error(data.error);
         }
       })
       .catch((error) => {
