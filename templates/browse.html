@@ -95,8 +95,8 @@
           <span>Drag & drop files here or click to browse</span>
           <input type="file" name="files" id="fileInput" multiple hidden>
         </div>
-        <ul id="filePreviewList" class="uploaded-files"></ul>
         <button type="submit" class="upload-btn">Upload</button>
+        <ul id="filePreviewList" class="uploaded-files"></ul>
       </form>
       <button class="close-btn" onclick="closeModal('uploadModal')">✖ Close</button>
     </div>
@@ -159,6 +159,12 @@
               {% endif %}
               <a href="{{ url_for('download', path=f.rel) }}" class="download-btn">Download</a>
             {% else %}
+              {% if me.username in f.name or session['role'] == 'owner' %}
+                <form method="post" action="{{ url_for('delete_folder') }}" style="display:inline;">
+                  <input type="hidden" name="folder_path" value="{{ f.rel }}">
+                  <button type="submit" class="delete-folder-btn">Delete</button>
+                </form>
+              {% endif %}
               <a href="{{ url_for('download_folder', path=f.rel) }}" class="download-btn">Download</a>
             {% endif %}
           </td>

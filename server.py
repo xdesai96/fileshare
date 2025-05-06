@@ -2,9 +2,23 @@ import os
 import time
 import logging
 import subprocess
+import shutil
 from dotenv import load_dotenv
 
-from flask import Flask, jsonify, request, render_template, redirect, url_for, session, send_from_directory, flash, abort, send_file, flash
+from flask import (
+    Flask,
+    jsonify,
+    request,
+    render_template,
+    redirect,
+    url_for,
+    session,
+    send_from_directory,
+    flash,
+    abort,
+    send_file,
+    flash,
+)
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -14,25 +28,25 @@ from utils import *
 # -------------------- Logs --------------------
 
 logging.basicConfig(level=logging.ERROR)
-werkzeug_logger = logging.getLogger('werkzeug')
+werkzeug_logger = logging.getLogger("werkzeug")
 werkzeug_logger.setLevel(logging.ERROR)
 
 # ------------------ App init ------------------
 
 load_dotenv()
-secret_key = os.getenv('secret_key')
+secret_key = os.getenv("secret_key")
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = secret_key
-app.config['SESSION_COOKIE_SECURE'] = False
+app.config["SESSION_COOKIE_SECURE"] = False
 
 
 # ------------------ DB init --------------------
 
 
-owner_username = os.getenv('owner_username')
-owner_password = os.getenv('owner_password')
+owner_username = os.getenv("owner_username")
+owner_password = os.getenv("owner_password")
 
 db.init_app(app)
 with app.app_context():
@@ -45,7 +59,7 @@ with app.app_context():
 # ------------------ Files ----------------------
 
 
-SHARE_DIR = os.getenv('SHARE_DIR')
+SHARE_DIR = os.getenv("SHARE_DIR")
 LOGIN_TEMPLATE = "login.html"
 FILES_TEMPLATE = "browse.html"
 
@@ -55,61 +69,61 @@ FILES_TEMPLATE = "browse.html"
 
 @app.before_request
 def ensure_user_valid():
-    if 'user_id' in session:
-        user = db.session.get(User, session['user_id'])
+    if "user_id" in session:
+        user = db.session.get(User, session["user_id"])
         if not user:
-            session.pop('user_id', None)
-            return redirect(url_for('login'))
+            session.pop("user_id", None)
+            return redirect(url_for("login"))
 
 
-@app.route('/logout', methods=['POST'])
+@app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for("login"))
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
         user = User.query.filter_by(username=username).first()
 
         if user and check_user_password(username, password):
-            session['user_id'] = user.id
+            session["user_id"] = user.id
 
             if user.owner:
-                session['role'] = 'owner'
+                session["role"] = "owner"
             elif user.admin:
-                session['role'] = 'admin'
+                session["role"] = "admin"
             else:
-                session['role'] = 'user'
+                session["role"] = "user"
 
-            return redirect(url_for('browse'))
+            return redirect(url_for("browse"))
         else:
             flash("Invalid credentials.")
-    
+
     return render_template(LOGIN_TEMPLATE)
 
 
-@app.route('/register_user', methods=['POST'])
+@app.route("/register_user", methods=["POST"])
 def register_user():
-    if 'user_id' not in session or session['role'] != 'owner':
+    if "user_id" not in session or session["role"] != "owner":
         return redirect(request.referrer)
 
-    username = request.form['username']
-    password = request.form['password']
-    
+    username = request.form["username"]
+    password = request.form["password"]
+
     add_user(username, password)
     return redirect(request.referrer)
 
 
-@app.route('/delete_user', methods=['POST'])
+@app.route("/delete_user", methods=["POST"])
 def delete_user_req():
-    if 'user_id' not in session or session['role'] != 'owner':
+    if "user_id" not in session or session["role"] != "owner":
         return redirect(request.referrer)
 
-    username = request.form['username']
+    username = request.form["username"]
 
     if username not in get_users().keys():
         return redirect(request.referrer)
@@ -118,24 +132,24 @@ def delete_user_req():
     return redirect(request.referrer)
 
 
-@app.route('/change_role/<username>/<role>', methods=['POST'])
+@app.route("/change_role/<username>/<role>", methods=["POST"])
 def change_role(username, role):
-    if session['role'] != 'owner':
-        return jsonify({'success': False, 'message': 'Access Denied'}), 403
+    if session["role"] != "owner":
+        return jsonify({"success": False, "message": "Access Denied"}), 403
 
     user = User.query.filter_by(username=username).first()
     if not user:
-        return jsonify({'success': False, 'message': 'User not found'}), 404
+        return jsonify({"success": False, "message": "User not found"}), 404
 
     if user.admin:
         db.session.delete(user.admin)
     if user.owner:
         db.session.delete(user.owner)
 
-    if role == 'admin':
+    if role == "admin":
         new_admin = Admin(user_id=user.id)
         db.session.add(new_admin)
-    elif role == 'owner':
+    elif role == "owner":
         new_owner = Owner(user_id=user.id)
         db.session.add(new_owner)
     else:
@@ -145,12 +159,13 @@ def change_role(username, role):
             db.session.delete(user.owner)
 
     db.session.commit()
-    return jsonify({'success': True})
+    return jsonify({"success": True})
 
-@app.route('/change_password', methods=['POST'])
+
+@app.route("/change_password", methods=["POST"])
 def change_password():
-    current_session = get_user_by_id(session['user_id'])
-    new_pswd = request.form['new_password']
+    current_session = get_user_by_id(session["user_id"])
+    new_pswd = request.form["new_password"]
     change_user_password(current_session.username, new_pswd)
     return redirect(request.referrer)
 
@@ -161,23 +176,27 @@ def change_password():
 def get_file_info(full_path, rel_path):
     stat = os.stat(full_path)
     return {
-        'name': os.path.basename(full_path),
-        'rel': rel_path,
-        'href': url_for('browse', path=rel_path) if os.path.isdir(full_path) else url_for('download', path=rel_path),
-        'is_dir': os.path.isdir(full_path),
-        'size': f"{stat.st_size / 1024:.1f} KB" if not os.path.isdir(full_path) else '',
-        'mtime': time.strftime('%Y-%m-%d %H:%M', time.localtime(stat.st_mtime)),
+        "name": os.path.basename(full_path),
+        "rel": rel_path,
+        "href": url_for("browse", path=rel_path)
+        if os.path.isdir(full_path)
+        else url_for("download", path=rel_path),
+        "is_dir": os.path.isdir(full_path),
+        "size": f"{stat.st_size / 1024:.1f} KB" if not os.path.isdir(full_path) else "",
+        "mtime": time.strftime("%Y-%m-%d %H:%M", time.localtime(stat.st_mtime)),
     }
 
 
-@app.route('/', defaults={'path': ''})
-@app.route('/<path:path>')
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
 def browse(path):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if "user_id" not in session:
+        return redirect(url_for("login"))
 
     full_path = os.path.join(SHARE_DIR, path)
-    if not os.path.exists(full_path) or not os.path.commonpath([SHARE_DIR, full_path]).startswith(SHARE_DIR):
+    if not os.path.exists(full_path) or not os.path.commonpath(
+        [SHARE_DIR, full_path]
+    ).startswith(SHARE_DIR):
         abort(404)
 
     files = []
@@ -186,74 +205,115 @@ def browse(path):
         r = os.path.join(path, name)
         files.append(get_file_info(p, r))
 
-    sort = request.args.get('sort', 'name')
-    files.sort(key=lambda x: x.get(sort) or '', reverse=False)
-    me = get_user_by_id(session['user_id'])
+    sort = request.args.get("sort", "name")
+    files.sort(key=lambda x: x.get(sort) or "", reverse=False)
+    me = get_user_by_id(session["user_id"])
     parent_path = os.path.dirname(path)
-    return render_template(FILES_TEMPLATE, admins=get_admins(), me=me, users=get_users(), role=get_logged_in_role(session), session=session, files=files, rel_path=path, parent_path=parent_path)
+    return render_template(
+        FILES_TEMPLATE,
+        admins=get_admins(),
+        me=me,
+        users=get_users(),
+        role=get_logged_in_role(session),
+        session=session,
+        files=files,
+        rel_path=path,
+        parent_path=parent_path,
+    )
 
 
-@app.route('/download/<path:path>')
+@app.route("/delete_folder", methods=["POST"])
+def delete_folder():
+    folder_path = request.form["folder_path"]
+
+    full_folder_path = os.path.join(SHARE_DIR, folder_path)
+
+    if os.path.exists(full_folder_path) and os.path.isdir(full_folder_path):
+        try:
+            shutil.rmtree(full_folder_path)
+            return redirect(request.referrer)
+        except Exception as e:
+            return f"Error deleting folder: {e}", 500
+    else:
+        return f"Folder not found: {full_folder_path}", 404
+
+
+@app.route("/download/<path:path>")
 def download(path):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
+    if "user_id" not in session:
+        return redirect(url_for("login"))
     full_path = os.path.join(SHARE_DIR, path)
     if not os.path.exists(full_path):
         abort(404)
     return send_from_directory(SHARE_DIR, path, as_attachment=True)
 
 
-@app.route('/delete_file', methods=['POST'])
+@app.route("/delete_file", methods=["POST"])
 def delete_file():
-    if 'user_id' not in session:
+    if "user_id" not in session:
         return "Access denied", 403
 
-    user = get_user_by_id(session['user_id'])
-    file_path = request.form['file_path']
+    user = get_user_by_id(session["user_id"])
+    file_path = request.form["file_path"]
     full_path = os.path.join(SHARE_DIR, file_path)
 
-    if os.path.isfile(full_path) and (user.username in os.path.basename(full_path) or user.role == 'owner'):
+    if os.path.isfile(full_path) and (
+        user.username in os.path.basename(full_path) or user.role == "owner"
+    ):
         os.remove(full_path)
         return redirect(request.referrer)
     else:
         return "Unauthorized or file not found", 403
 
 
-@app.route('/admin_upload', methods=['POST'])
+@app.route("/admin_upload", methods=["POST"])
 def admin_upload():
-    if 'user_id' not in session:
+    if "user_id" not in session:
         return "Access Denied", 403
 
-    uploaded_files = request.files.getlist('files')
+    uploaded_files = request.files.getlist("files")
     if len(uploaded_files) < 1:
         return redirect(request.referrer)
-    current_session = get_user_by_id(session['user_id'])
+
+    current_session = get_user_by_id(session["user_id"])
+    username = current_session.username
+
     for file in uploaded_files:
         if file.filename:
-            filename = file.filename
-            username = current_session.username
+            relative_path = file.filename
 
-            base, ext = os.path.splitext(filename)
+            if username != owner_username:
+                relative_path = os.path.join(username, relative_path)
+
+            final_path = os.path.join(SHARE_DIR, relative_path)
+
+            os.makedirs(os.path.dirname(final_path), exist_ok=True)
+
+            base, ext = os.path.splitext(os.path.basename(final_path))
+            folder = os.path.dirname(final_path)
             i = 1
-            final_name = f"{username}_{base}{ext}" if username != owner_username else f"{base}{ext}"
-            while os.path.exists(os.path.join(SHARE_DIR, final_name)):
-                final_name = f"{i}_{username}_{base}{ext}" if username != owner_username else f"{i}_{base}{ext}"
+            while os.path.exists(final_path):
+                new_filename = f"{i}_{base}{ext}"
+                final_path = os.path.join(folder, new_filename)
                 i += 1
-            file.save(os.path.join(SHARE_DIR, final_name))
+
+            file.save(final_path)
 
     return redirect(request.referrer)
 
 
-@app.route('/update_fileshare', methods=['POST'])
+@app.route("/update_fileshare", methods=["POST"])
 def update_fileshare():
     try:
-        result = subprocess.run(['git', 'pull'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return jsonify({'success': True, 'output': result.stdout.decode('utf-8')}), 200
+        result = subprocess.run(
+            ["git", "pull"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
+        return jsonify({"success": True, "output": result.stdout.decode("utf-8")}), 200
     except subprocess.CalledProcessError as e:
-        return jsonify({'success': False, 'error': e.stderr.decode('utf-8')}), 500
+        return jsonify({"success": False, "error": e.stderr.decode("utf-8")}), 500
 
 
-@app.route('/download_folder/<path:path>')
+@app.route("/download_folder/<path:path>")
 def download_folder(path):
     full_path = os.path.join(SHARE_DIR, path)
     if not os.path.exists(full_path) or not os.path.isdir(full_path):
@@ -262,7 +322,7 @@ def download_folder(path):
     zip_filename = f"{path.strip('/').replace('/', '_')}.zip"
     zip_path = os.path.join("/tmp", zip_filename)
 
-    shutil.make_archive(zip_path.replace(".zip", ""), 'zip', full_path)
+    shutil.make_archive(zip_path.replace(".zip", ""), "zip", full_path)
 
     return send_file(zip_path, as_attachment=True, download_name=zip_filename)
 
@@ -270,6 +330,5 @@ def download_folder(path):
 # ---------------- Run ------------------
 
 
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5555, debug=False)
-
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5555, debug=False)

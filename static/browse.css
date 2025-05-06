@@ -16,7 +16,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   padding: 0.5em;
   text-align: left;
   border-bottom: 1px solid #444;
@@ -48,7 +49,9 @@ button,
   padding: 0.6em 1em;
   border-radius: 6px;
   cursor: pointer;
-  transition: opacity 0.3s ease, background-color 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    background-color 0.3s ease;
   margin-bottom: 1em;
 }
 
@@ -133,23 +136,43 @@ button:hover,
 
 /* Анимации */
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-  from { opacity: 0.5; }
-  to   { opacity: 0; }
+  from {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes slideIn {
-  from { transform: translateY(-50px); opacity: 0; }
-  to   { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes slideOut {
-  from { transform: translateY(0); opacity: 1; }
-  to   { transform: translateY(-50px); opacity: 0; }
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
 }
 
 /* Список пользователей */
@@ -173,7 +196,8 @@ button:hover,
   flex-wrap: wrap;
 }
 
-.delete-btn, .role-btn {
+.delete-btn,
+.role-btn {
   background-color: #555;
   border: none;
   color: white;
@@ -182,10 +206,13 @@ button:hover,
   margin-left: 0.5em;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
-.delete-btn:hover, .role-btn:hover {
+.delete-btn:hover,
+.role-btn:hover {
   background-color: #777;
   transform: scale(1.05);
 }
@@ -194,7 +221,8 @@ button:hover,
   background-color: red;
 }
 
-.download-btn, .delete-file-btn {
+.download-btn,
+.delete-file-btn {
   display: inline-block;
   background-color: #4caf50;
   color: white;
@@ -206,7 +234,8 @@ button:hover,
   transition: background-color 0.3s ease;
 }
 
-.delete-file-btn {
+.delete-file-btn,
+.delete-folder-btn {
   background-color: #e53935;
   border: none;
   color: white;
@@ -214,7 +243,9 @@ button:hover,
   padding: 0.4em 0.9em;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
 }
 
 .delete-file-btn:hover {
@@ -233,7 +264,9 @@ button:hover,
   background: #2a2a2a;
   color: #ccc;
   cursor: pointer;
-  transition: border-color 0.3s, background-color 0.3s;
+  transition:
+    border-color 0.3s,
+    background-color 0.3s;
   margin-bottom: 20px;
 }
 
@@ -276,4 +309,3 @@ button:hover,
 .remove-file-btn:hover {
   color: #ff3b3b;
 }
-
