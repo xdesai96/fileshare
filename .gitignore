@@ -2,4 +2,5 @@
 instance/users.db
 .venv
 venv
+uploads/*
 __pycache__/
