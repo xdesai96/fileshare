@@ -1,7 +1,9 @@
 from models import db, User, Admin, Owner
+import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # ---------- USER FUNCTIONS ----------
+
 
 def add_user(username, password):
     if not User.query.filter_by(username=username).first():
@@ -19,23 +21,22 @@ def get_role(username):
     if not user:
         return None
     if Owner.query.filter_by(user_id=user.id).first():
-        return 'owner'
+        return "owner"
     if Admin.query.filter_by(user_id=user.id).first():
-        return 'admin'
-    return 'user'
+        return "admin"
+    return "user"
 
 
 def get_logged_in_role(session):
-    if 'user_id' not in session:
+    if "user_id" not in session:
         return None
-    user = get_user_by_id(session['user_id'])
+    user = get_user_by_id(session["user_id"])
     return get_role(user.username)
 
 
 def delete_user(username):
     user = User.query.filter_by(username=username).first()
     if user:
-        # Удалим возможную связку с Owner/Admin
         admin = Admin.query.filter_by(user_id=user.id).first()
         owner = Owner.query.filter_by(user_id=user.id).first()
         if admin:
@@ -45,6 +46,43 @@ def delete_user(username):
 
         db.session.delete(user)
         db.session.commit()
+
+
+def get_file_icon(file_name):
+    file_extension = file_name.split(".")[-1].lower()
+
+    icons = {
+        "zip": "archive.png",
+        "tar": "archive.png",
+        "exe": "exe.png",
+        "gz": "archive.png",
+        "jpg": "image.png",
+        "jpeg": "image.png",
+        "png": "image.png",
+        "gif": "image.png",
+        "py": "python.png",
+        "js": "js.png",
+        "java": "java.png",
+        "html": "html.png",
+        "css": "css.png",
+        "txt": "file.png",
+        "pdf": "pdf.png",
+        "docx": "word.png",
+        "pptx": "ppt.png",
+        "mp4": "video.png",
+        "avi": "video.png",
+        "mp3": "audio.png",
+        "xlsx": "excel.png",
+        "txt": "txt.png",
+        "php": "php.png",
+        "rb": "ruby.png",
+        "c": "c.png",
+        "cpp": "cpp.png",
+    }
+    if os.path.isdir(file_name):
+        return "folder.png"
+
+    return icons.get(file_extension, "file.png")
 
 
 def change_user_password(username, new_password):
@@ -109,4 +147,3 @@ def delete_owner(username):
         if owner:
             db.session.delete(owner)
             db.session.commit()
-

@@ -142,8 +142,10 @@
         <tr>
           <td>
             {% if f.is_dir %}
+              <img src="{{ f.icon }}" alt="Folder" class="icon">
               <a href="{{ f.href }}">{{ f.name }}/</a>
             {% else %}
+              <img src="{{ f.icon }}" alt="File" class="icon">
               <a href="{{ f.href }}">{{ f.name }}</a>
             {% endif %}
           </td>

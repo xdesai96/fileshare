@@ -9,6 +9,7 @@ body {
 a {
   color: #00aaff;
   text-decoration: none;
+  font-size: 1.2em;
 }
 
 table {
@@ -64,7 +65,6 @@ button:hover,
   background-color: #666;
 }
 
-/* Специальные кнопки */
 .logout-btn {
   background-color: #777;
   opacity: 0.7;
@@ -92,7 +92,6 @@ button:hover,
   margin-top: 10px;
 }
 
-/* Модальное окно */
 .modal {
   position: absolute;
   top: 0;
@@ -175,7 +174,6 @@ button:hover,
   }
 }
 
-/* Список пользователей */
 .user-list {
   list-style: none;
   padding: 0;
@@ -234,6 +232,12 @@ button:hover,
   transition: background-color 0.3s ease;
 }
 
+.icon {
+  height: 2rem;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
 .delete-file-btn,
 .delete-folder-btn {
   background-color: #e53935;
@@ -256,7 +260,6 @@ button:hover,
   background-color: #66bb6a;
 }
 
-/* Drag and drop */
 .drop-zone {
   border: 2px dashed #555;
   border-radius: 8px;

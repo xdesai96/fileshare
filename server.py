@@ -177,6 +177,7 @@ def get_file_info(full_path, rel_path):
     stat = os.stat(full_path)
     return {
         "name": os.path.basename(full_path),
+        "icon": url_for("static", filename="icons/" + get_file_icon(full_path)),
         "rel": rel_path,
         "href": url_for("browse", path=rel_path)
         if os.path.isdir(full_path)
