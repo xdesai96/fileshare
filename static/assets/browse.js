@@ -7,7 +7,6 @@ function openModal(modalId) {
 
   modal.style.display = "flex";
   modal.style.animation = "fadeIn 0.3s ease-out forwards";
-  if (content) content.style.animation = "slideIn 0.3s ease-out forwards";
 }
 
 function closeModal(modalId) {
@@ -16,7 +15,6 @@ function closeModal(modalId) {
   const content = modal.querySelector(".modal-content");
 
   modal.style.animation = "fadeOut 0.3s ease-in forwards";
-  if (content) content.style.animation = "slideOut 0.3s ease-in forwards";
 
   setTimeout(() => {
     modal.style.display = "none";
@@ -191,6 +189,31 @@ function setupDropZone(dropZoneId, fileInputId, previewListId) {
     updateFileInput();
   });
 }
+
+document.querySelectorAll("a.file-link").forEach((link) => {
+  link.addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const filePath = this.getAttribute("data-path");
+
+    fetch(`/preview?file_url=${encodeURIComponent(filePath)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load file");
+        return res.text();
+      })
+      .then((text) => {
+        const fileContentElement = document.getElementById("fileContent");
+        fileContentElement.innerHTML = text;
+        openModal("filePreviewModal");
+      })
+      .catch((err) => {
+        document.getElementById("fileContent").textContent =
+          "⚠️ Could not preview this file.";
+        openModal("filePreviewModal");
+        console.error(err);
+      });
+  });
+});
 
 function changeRole(username, newRole) {
   fetch(`/change_role/${username}/${newRole}`, {

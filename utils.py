@@ -1,6 +1,8 @@
 from models import db, User, Admin, Owner
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import urlparse, unquote
+from server import SHARE_DIR
 
 # ---------- USER FUNCTIONS ----------
 
@@ -46,6 +48,17 @@ def delete_user(username):
 
         db.session.delete(user)
         db.session.commit()
+
+
+def secure_path_from_url(file_url):
+    parsed = urlparse(file_url)
+    rel_path = unquote(parsed.path).lstrip("/")
+    abs_path = os.path.abspath(os.path.join(SHARE_DIR, rel_path))
+
+    if not abs_path.startswith(SHARE_DIR):
+        raise ValueError("Invalid path")
+
+    return abs_path
 
 
 def get_file_icon(file_name):

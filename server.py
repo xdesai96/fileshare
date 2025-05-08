@@ -4,7 +4,8 @@ import logging
 import subprocess
 import shutil
 from dotenv import load_dotenv
-
+import html
+import mimetypes
 from flask import (
     Flask,
     jsonify,
@@ -108,7 +109,7 @@ def login():
 
 @app.route("/register_user", methods=["POST"])
 def register_user():
-    if "user_id" not in session or session["role"] != "owner":
+    if session["role"] != "owner":
         return redirect(request.referrer)
 
     username = request.form["username"]
@@ -143,22 +144,26 @@ def change_role(username, role):
 
     if user.admin:
         db.session.delete(user.admin)
+        db.session.commit()
     if user.owner:
         db.session.delete(user.owner)
+        db.session.commit()
 
     if role == "admin":
         new_admin = Admin(user_id=user.id)
         db.session.add(new_admin)
+        db.session.commit()
     elif role == "owner":
         new_owner = Owner(user_id=user.id)
         db.session.add(new_owner)
+        db.session.commit()
     else:
         if user.admin:
             db.session.delete(user.admin)
+            db.session.commit()
         if user.owner:
             db.session.delete(user.owner)
-
-    db.session.commit()
+            db.session.commit()
     return jsonify({"success": True})
 
 
@@ -191,9 +196,6 @@ def get_file_info(full_path, rel_path):
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def browse(path):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
-
     full_path = os.path.join(SHARE_DIR, path)
     if not os.path.exists(full_path) or not os.path.commonpath(
         [SHARE_DIR, full_path]
@@ -201,10 +203,14 @@ def browse(path):
         abort(404)
 
     files = []
-    for name in os.listdir(full_path):
-        p = os.path.join(full_path, name)
-        r = os.path.join(path, name)
-        files.append(get_file_info(p, r))
+
+    if os.path.isdir(full_path):
+        for name in os.listdir(full_path):
+            p = os.path.join(full_path, name)
+            r = os.path.join(path, name)
+            files.append(get_file_info(p, r))
+    else:
+        files.append(get_file_info(full_path, path))
 
     sort = request.args.get("sort", "name")
     files.sort(key=lambda x: x.get(sort) or "", reverse=False)
@@ -241,8 +247,6 @@ def delete_folder():
 
 @app.route("/download/<path:path>")
 def download(path):
-    if "user_id" not in session:
-        return redirect(url_for("login"))
     full_path = os.path.join(SHARE_DIR, path)
     if not os.path.exists(full_path):
         abort(404)
@@ -251,9 +255,6 @@ def download(path):
 
 @app.route("/delete_file", methods=["POST"])
 def delete_file():
-    if "user_id" not in session:
-        return "Access denied", 403
-
     user = get_user_by_id(session["user_id"])
     file_path = request.form["file_path"]
     full_path = os.path.join(SHARE_DIR, file_path)
@@ -269,9 +270,6 @@ def delete_file():
 
 @app.route("/admin_upload", methods=["POST"])
 def admin_upload():
-    if "user_id" not in session:
-        return "Access Denied", 403
-
     uploaded_files = request.files.getlist("files")
     if len(uploaded_files) < 1:
         return redirect(request.referrer)
@@ -312,6 +310,43 @@ def update_fileshare():
         return jsonify({"success": True, "output": result.stdout.decode("utf-8")}), 200
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr.decode("utf-8")}), 500
+
+
+@app.route("/preview")
+def preview_file():
+    file_url = request.args.get("file_url")
+    try:
+        file_path = secure_path_from_url(file_url)
+
+        mime_type, _ = mimetypes.guess_type(file_path)
+        if not mime_type:
+            mime_type = "application/octet-stream"
+
+        if mime_type.startswith("image/"):
+            return f'<img src="/files/{file_url}" alt="Image Preview" style="max-width:100%;">'
+
+        elif mime_type.startswith("text/") or file_path.endswith(
+            (".txt", ".sh", ".ovpn", ".config", ".conf")
+        ):
+            with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+                content = f.read()
+            escaped = html.escape(content)
+            return f"<pre>{escaped}</pre>"
+
+        else:
+            return f"<p>📦 Невозможно отобразить файл типа: {mime_type}</p>", 415
+
+    except Exception as e:
+        logging.error(f"Error: {e}")
+        return f"<p>❌ Ошибка при открытии файла: {e}</p>", 400
+
+
+@app.route("/files/<path:path>")
+def serve_file(path):
+    full_path = os.path.join(SHARE_DIR, path)
+    if not os.path.exists(full_path):
+        abort(404)
+    return send_file(full_path)
 
 
 @app.route("/download_folder/<path:path>")

@@ -53,14 +53,14 @@
   <div id="adminModal" class="modal">
     <div class="modal-content">
         <h1>Admin Panel</h1>
-        <h2>👑 Admins</h2>
+          <h2>👑 Admins</h2>
         <ul>{% for admin in admins %}<li>{{ admin }}</li>{% endfor %}</ul>
         <hr>
-        <h2>👤 Users</h2>
+          <h2>👤 Users</h2>
         <ul>
           {% for username, user in users.items() %}
             {% if user.role != 'owner' %}
-            <li>{{ username }} (Role: <span id="role-{{ username }}">{{ user.role }}</span>)
+            <li>{{ username }} (<span id="role-{{ username }}">{{ user.role }}</span>)
               {% if role == 'owner' %}
                 <div class="user-actions">
                   <button onclick="changeRole('{{ username }}', 'admin')" class="role-btn">Make Admin</button>
@@ -73,9 +73,6 @@
               {% endif %}
             </li>
             {% endif %}
-          {% if not loop.last %}
-            <hr/>
-          {% endif %}
           {% endfor %}
         </ul>
         <button id="openAddUserModal">➕ Add User</button>
@@ -117,6 +114,15 @@
     </div>
   </div>
 
+  <!-- File Preview Modal -->
+  <div id="filePreviewModal" class="modal">
+    <button class="close-btn" onclick="closeModal('filePreviewModal')">✖ Close</button>
+    <div class="modal-content">
+      <h2>📄 File Preview</h2>
+      <pre id="fileContent" class="file-preview-text">Loading...</pre>
+    </div>
+  </div>
+
 
   <!-- File Table -->
   <h1>📁 {{ rel_path or '/' }}</h1>
@@ -146,7 +152,7 @@
               <a href="{{ f.href }}">{{ f.name }}/</a>
             {% else %}
               <img src="{{ f.icon }}" alt="File" class="icon">
-              <a href="{{ f.href }}">{{ f.name }}</a>
+              <a href="{{ f.rel }}" class="file-link" data-path="{{ f.rel }}" >{{ f.name }}</a>
             {% endif %}
           </td>
           <td>{{ f.size }}</td>

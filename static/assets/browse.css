@@ -26,23 +26,12 @@ td {
 
 .header-buttons {
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 1em;
   margin-bottom: 1em;
 }
 
-/* Кнопки общего назначения */
-button,
-.admin-panel-button,
-.settings-btn,
-.logout-btn,
-.upload-btn,
-.delete-btn,
-.change-pass-btn,
-.delete-account-btn,
-.close-btn,
-.add-user-btn,
-.register-btn {
+button {
   background-color: #333;
   border: none;
   color: white;
@@ -56,7 +45,6 @@ button,
   margin-bottom: 1em;
 }
 
-button:hover,
 .admin-panel-button:hover,
 .settings-btn:hover,
 .logout-btn:hover,
@@ -80,18 +68,6 @@ button:hover,
   background-color: #616161;
 }
 
-.delete-account-btn {
-  background-color: red;
-}
-
-.inline-form {
-  display: inline;
-}
-
-.del-admin-form {
-  margin-top: 10px;
-}
-
 .modal {
   position: absolute;
   top: 0;
@@ -107,7 +83,7 @@ button:hover,
 }
 
 .modal-content {
-  background-color: #1e1e1e;
+  background-color: #272727;
   padding: 20px;
   border: 1px solid #444;
   border-radius: 10px;
@@ -127,13 +103,6 @@ button:hover,
   font-size: 1em;
 }
 
-.modal .modal-content form .close-btn,
-.modal-content .close-btn,
-.modal-content .delete-account-btn {
-  margin-top: 10px;
-}
-
-/* Анимации */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -152,67 +121,17 @@ button:hover,
   }
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideOut {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(-50px);
-    opacity: 0;
-  }
-}
-
-.user-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.user-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5em 0;
-  border-bottom: 1px solid #444;
-}
-
 .user-actions {
   display: flex;
-  gap: 0.5em;
+  gap: 0.6em;
+  margin-top: 1em;
   flex-wrap: wrap;
-}
-
-.delete-btn,
-.role-btn {
-  background-color: #555;
-  border: none;
-  color: white;
   font-size: 0.8em;
-  padding: 0.3em 0.6em;
-  margin-left: 0.5em;
-  border-radius: 4px;
-  cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
+  font-weight: bold;
 }
 
-.delete-btn:hover,
 .role-btn:hover {
   background-color: #777;
-  transform: scale(1.05);
 }
 
 .delete-btn {
@@ -247,13 +166,7 @@ button:hover,
   padding: 0.4em 0.9em;
   border-radius: 4px;
   cursor: pointer;
-  transition:
-    background-color 0.3s ease,
-    transform 0.2s ease;
-}
-
-.delete-file-btn:hover {
-  background-color: #ef5350;
+  transition: background-color 0.3s ease;
 }
 
 .download-btn:hover {
@@ -278,7 +191,7 @@ button:hover,
   background-color: #333;
 }
 
-.uploaded-files {
+ul {
   list-style: none;
   padding: 0;
   margin: 10px 0;
@@ -309,6 +222,65 @@ button:hover,
   margin-left: 10px;
 }
 
-.remove-file-btn:hover {
-  color: #ff3b3b;
+#filePreviewModal {
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  justify-content: center;
+  align-items: center;
+}
+
+#filePreviewModal .modal-content {
+  max-width: 90%;
+  max-height: 90%;
+  padding: 20px;
+  overflow: auto;
+  position: relative;
+}
+
+#fileContent {
+  max-height: 70vh;
+  color: #fff;
+  overflow: auto;
+  font-family: "Fira Code", monospace;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+#fileContent img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+
+#filePreviewModal .close-btn {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+  background: none;
+  border: none;
+  transition: color 0.3s;
+}
+
+#filePreviewModal .close-btn:hover {
+  color: #e00;
+}
+
+.modal .modal-content ul li {
+  font-size: 1.2em;
+}
+.modal .modal-content ul li span {
+  color: #ccc;
+  font-weight: bold;
 }
