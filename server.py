@@ -26,8 +26,13 @@ from models import db, User, Admin, Owner
 from utils import (
     add_owner,
     add_user,
+    change_user_password,
+    delete_user,
+    secure_path_from_url,
+    get_logged_in_role,
     get_user_by_id,
     get_users,
+    get_file_icon,
     get_admins,
     check_user_password,
 )
@@ -202,6 +207,8 @@ def get_file_info(full_path, rel_path):
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")
 def browse(path):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
     full_path = os.path.join(SHARE_DIR, path)
     if not os.path.exists(full_path) or not os.path.commonpath(
         [SHARE_DIR, full_path]
@@ -322,7 +329,7 @@ def update_fileshare():
 def preview_file():
     file_url = request.args.get("file_url")
     try:
-        file_path = secure_path_from_url(file_url)
+        file_path = secure_path_from_url(SHARE_DIR, file_url)
 
         mime_type, _ = mimetypes.guess_type(file_path)
         if not mime_type:
